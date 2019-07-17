@@ -5,8 +5,13 @@ import App from './App';
 import router from './router';
 import store from './store';
 import './assets/styles/main.css';
+// 使用museui
+import MuseUI from 'muse-ui';
+import 'muse-ui/dist/muse-ui.css';
+import './assets/styles/main.styl';
+import {queryString} from '@utils/'
 
-xxxxxx
+
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
