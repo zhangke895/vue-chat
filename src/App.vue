@@ -1,23 +1,46 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <router-view></router-view>
+    <!--tab选项卡-->
+    <div class="app-bottom" v-if="istab">
+      <mu-paper>
+        <mu-bottom-nav :value="bottomNav" @change="handleChange">
+          <mu-bottom-nav-item value="recents" title="主页" icon="restore" to="/"></mu-bottom-nav-item>
+          <mu-bottom-nav-item value="nearby" title="我的" icon="location_on" to="/home"></mu-bottom-nav-item>
+        </mu-bottom-nav>
+      </mu-paper>
+    </div>
   </div>
 </template>
 
 <script>
+import {mapState} from 'vuex';
 export default {
-  name: 'App'
+  data () {
+    return {
+      bottomNav: 'recents'
+    }
+  },
+  methods: {
+    handleChange (val) {
+      this.bottomNav = val;
+    }
+  },
+  computed: {
+    ...mapState(['istab'])
+  }
 }
 </script>
 
-<style>
+<style lang="stylus" rel="stylesheet/stylus">
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  width: 100%;
+  height: 100%;
+  .app-bottom {
+    position: fixed;
+    bottom: 0;
+    z-index: 102;
+    width: 100%;
+  }
 }
 </style>
