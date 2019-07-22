@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {setItem, getItem} from '@utils/localStorage';
+import url from '@api/server.js';
 
 Vue.use(Vuex);
 
@@ -24,6 +25,11 @@ const store = new Vuex.Store({
         },
         setLoginState (state, value) {
             state.isLogin = value;
+        },
+        setUnread (state, value) {
+            for (let i in value) {
+                state.unRead[i] = +value[i];
+            }
         }
     },
 

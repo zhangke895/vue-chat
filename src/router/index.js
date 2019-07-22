@@ -3,6 +3,8 @@ import Router from 'vue-router';
 import BaseTransition from '../BaseTransition';
 import loading from '../components/loading/loading';
 import Index from '../view/Index';
+import Login from '../view/Login';
+import Register from '../view/Register';
 
 Vue.use(Router);
 
@@ -24,6 +26,16 @@ const router = new Router({
           component: Index
         },
       ]
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: Login
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: Register
     }
   ]
 });
