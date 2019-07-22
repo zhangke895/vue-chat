@@ -10,13 +10,23 @@ const store = new Vuex.Store({
             src: getItem('src'),
             userid: getItem('userid')
         },
+        isLogin: false,
         unRead: {
             room1: 0,
             room2: 0
         },
         // 是否启动tab
         istab: false,
-    }
+    },
+    mutations: {
+        setTab (state, data) {
+            state.istab = data;
+        },
+        setLoginState (state, value) {
+            state.isLogin = value;
+        }
+    },
+
 });
 
 export default store;
