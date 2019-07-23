@@ -14,7 +14,7 @@
                 </mu-form-item>
                 <mu-form-item>
                     <mu-button color="primary" @click="submit">提交</mu-button>
-                    <mu-button>重置</mu-button>
+                    <mu-button @click="login">登录</mu-button>
                 </mu-form-item>
             </mu-form>
         </mu-container>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
+//import {mapState} from 'vuex';
 import socket from '../socket';
 
 export default {
@@ -49,13 +49,29 @@ export default {
     methods: {
         submit () {
             const src = `//s3.qiufengh.com/avatar/${Math.ceil(Math.random() * 272)}.jpeg`;
-            this.$refs.form.validate().then((result) => {
+            this.$refs.form.validate().then(async (result) => {
                 const data = {
                     name: this.validateForm.username,
                     password: this.validateForm.password,
                     src: src
+                };
+                const res = await this.$store.dispatch("registerSubmit", data);
+                if (res.status === 'success') {
+                    this.$store.commit('setUserInfo', {
+                        type: 'userid',
+                        value: data.name
+                    });
+                    this.$store.commit('setUserInfo', {
+                        type: 'src',
+                        value: data.src
+                    });
+                    this.$router.push({path: '/'});
+                    //socket.emit('login', {name: data.name});
                 }
             });
+        },
+        login () {
+            this.$router.push({path: 'login'});
         }
     }
 }

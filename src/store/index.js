@@ -30,9 +30,28 @@ const store = new Vuex.Store({
             for (let i in value) {
                 state.unRead[i] = +value[i];
             }
+        },
+        setUserInfo (state, data) {
+            const {type, value} = data;
+            setItem(type, value);
+            state.userInfo[type] = value;
         }
     },
-
+    actions: {
+        async registerSubmit ({commit}, data) {
+            const res = await url.register(data);
+            if (res.data.errno === 0) {
+                return {
+                    status: 'success',
+                    data: res.data
+                };
+            }
+            return {
+                status: 'fail',
+                data: res.data
+            };
+        }
+    }
 });
 
 export default store;

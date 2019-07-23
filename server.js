@@ -10,6 +10,20 @@ var session = require('cookie-session');
 var mongoose = require('./db/mongodb');
 // 服务启动
 var app = express();
+app.all('*', (req, res, next) => {
+    const { origin, Origin, referer, Referer } = req.headers;
+    const allowOrigin = origin || Origin || referer || Referer || 'http://localhost:8080';
+    res.header("Access-Control-Allow-Origin", allowOrigin);
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Credentials", true); //可以带cookies
+    res.header("X-Powered-By", 'Express');
+    if (req.method == 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
 var router = express.Router();
 app.use(router);
 // 服务器提交的数据json化
@@ -23,7 +37,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-//require('./router/routes')(app);
+require('./router/routes')(app);
 var server = app.listen(9090);
 require('./websocket.js')(server);
 

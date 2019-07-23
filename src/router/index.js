@@ -5,6 +5,7 @@ import loading from '../components/loading/loading';
 import Index from '../view/Index';
 import Login from '../view/Login';
 import Register from '../view/Register';
+import Chat from '../view/Chat';
 
 Vue.use(Router);
 
@@ -25,6 +26,11 @@ const router = new Router({
           name: 'Index',
           component: Index
         },
+        {
+            path: '/chat',
+            name: 'Chat',
+            component: Chat
+        }
       ]
     },
     {
@@ -36,7 +42,7 @@ const router = new Router({
         path: '/register',
         name: 'Register',
         component: Register
-    }
+    },
   ]
 });
 
