@@ -2,7 +2,7 @@
     <div>
         <mu-list>
             <mu-sub-header>最近聊天记录</mu-sub-header>
-            <mu-list-item>
+            <mu-list-item @click="goChat('room1')">
                 <div class="avatar">
                     <span class="tip" v-if="unRead1 !== 0">{{unRead1 > 99 ? '99+' : unRead1}}</span>
                     <mu-avatar>
@@ -12,7 +12,7 @@
                 <mu-list-item-title>聊天室1</mu-list-item-title>
                 <mu-icon value="chat_bubble"></mu-icon>
             </mu-list-item>
-            <mu-list-item>
+            <mu-list-item @click="goChat('room2')">
                 <div class="avatar">
                     <span class="tip" v-if="unRead2 !== 0">{{unRead2 > 99 ? '99+' : unRead2}}</span>
                     <mu-avatar>
@@ -61,6 +61,14 @@ export default {
                     console.log(userCount);
                 });
                 this.$store.commit('setLoginState', true);
+            }
+        }
+    },
+    methods: {
+        async goChat (roomId) {
+            const userId = this.userid;
+            if (!userId) {
+                const res =
             }
         }
     },
