@@ -6,6 +6,7 @@ import Index from '../view/Index';
 import Login from '../view/Login';
 import Register from '../view/Register';
 import Chat from '../view/Chat';
+import Robot from '../view/Robot';
 
 Vue.use(Router);
 
@@ -30,6 +31,11 @@ const router = new Router({
             path: '/chat',
             name: 'Chat',
             component: Chat
+        },
+        {
+            path: '/robot',
+            name: 'Robot',
+            component: Robot
         }
       ]
     },

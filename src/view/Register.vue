@@ -3,7 +3,7 @@
         <div class="header"></div>
         <mu-container>
             <mu-form ref="form" :model="validateForm" class="mu-demo-form">
-                <mu-form-item label="用户名" help-text="帮助文字" prop="username" :rules="usernameRules">
+                <mu-form-item label="用户名" prop="username" :rules="usernameRules">
                     <mu-text-field v-model="validateForm.username" prop="username"></mu-text-field>
                 </mu-form-item>
                 <mu-form-item label="密码" prop="password" :rules="passwordRules">
@@ -13,7 +13,7 @@
                     <mu-checkbox label="同意用户协议" v-model="validateForm.isAgree"></mu-checkbox>
                 </mu-form-item>
                 <mu-form-item>
-                    <mu-button color="primary" @click="submit">提交</mu-button>
+                    <mu-button color="primary" @click="submit">注册</mu-button>
                     <mu-button @click="login">登录</mu-button>
                 </mu-form-item>
             </mu-form>
@@ -23,7 +23,7 @@
 
 <script>
 //import {mapState} from 'vuex';
-import socket from '../socket';
+//import socket from '../socket';
 
 export default {
     data () {
@@ -45,6 +45,9 @@ export default {
                 isAgree: false
             }
         }
+    },
+    mounted () {
+        this.$store.commit('setTab', false);
     },
     methods: {
         submit () {
@@ -71,7 +74,7 @@ export default {
             });
         },
         login () {
-            this.$router.push({path: 'login'});
+            this.$router.push({path: '/login'});
         }
     }
 }

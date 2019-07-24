@@ -2,8 +2,8 @@
     <div>
         <mu-list>
             <mu-sub-header>最近聊天记录</mu-sub-header>
-            <mu-list-item @click="goChat('room1')">
-                <div class="avatar">
+            <mu-list-item>
+                <div class="avatar" @click="goChat('room1')">
                     <span class="tip" v-if="unRead1 !== 0">{{unRead1 > 99 ? '99+' : unRead1}}</span>
                     <mu-avatar>
                         <img :src="house1" />
@@ -12,8 +12,8 @@
                 <mu-list-item-title>聊天室1</mu-list-item-title>
                 <mu-icon value="chat_bubble"></mu-icon>
             </mu-list-item>
-            <mu-list-item @click="goChat('room2')">
-                <div class="avatar">
+            <mu-list-item>
+                <div class="avatar" @click="goChat('room2')">
                     <span class="tip" v-if="unRead2 !== 0">{{unRead2 > 99 ? '99+' : unRead2}}</span>
                     <mu-avatar>
                         <img :src="house2" />
@@ -26,7 +26,7 @@
         <mu-list>
             <mu-sub-header>客服</mu-sub-header>
             <mu-list-item>
-                <mu-avatar>
+                <mu-avatar @click="chatRobot()">
                     <img :src="robot" />
                 </mu-avatar>
                 <mu-list-item-title>客服</mu-list-item-title>
@@ -40,6 +40,7 @@
 import {mapState} from 'vuex';
 import { ROBOT_URL, HOST_URL1, HOST_URL2 } from "@const/index";
 import socket from '../socket';
+import Confirm from '@components/Confirm';
 
 export default {
     data () {
@@ -68,8 +69,21 @@ export default {
         async goChat (roomId) {
             const userId = this.userid;
             if (!userId) {
-                const res =
+                const res = await Confirm({
+                    title: '提示',
+                    content: '聊天请先登录，但是你可以查看聊天记录哦~'
+                });
+                if (res === 'submit') {
+                    this.$router.push({path: '/login'});
+                }
+                return;
             }
+            this.$store.commit('setTab', false);
+            this.$router.push({path: '/chat', query: {roomId: roomId}});
+        },
+        chatRobot () {
+            this.$store.commit('setTab', false);
+            this.$router.push({path: '/robot'});
         }
     },
     computed: {
