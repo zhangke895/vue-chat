@@ -18,6 +18,13 @@ const store = new Vuex.Store({
         },
         // 是否启动tab
         istab: false,
+        roomdetail: {
+            id: '',
+            users: {},
+            infos: [],
+            current: 1,
+            total: 0
+        }
     },
     mutations: {
         setTab (state, data) {
@@ -64,6 +71,9 @@ const store = new Vuex.Store({
                 data: res.data
             }
         }
+    },
+    getters: {
+        getUsers: state => state.roomdetail.users,
     }
 });
 

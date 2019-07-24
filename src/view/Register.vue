@@ -23,7 +23,7 @@
 
 <script>
 //import {mapState} from 'vuex';
-//import socket from '../socket';
+import socket from '../socket';
 
 export default {
     data () {
