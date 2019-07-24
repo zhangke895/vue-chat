@@ -33,4 +33,68 @@ module.exports = (app) => {
             }
         });
     });
+
+    // 登录
+    app.post('/user/signin', (req, res) => {
+        const _user = req.body;
+        const name = _user.name;
+        const password = _user.password;
+        User.findOne({name: name}, (err, user) => {
+            if (err) {
+                global.logger.error(err);
+            }
+            if (!user) {
+                res.json({
+                    errno: 1,
+                    data: '用户不存在'
+                });
+            } else {
+                if (!!password) {
+                    user.comparePassword(password, (err, isMatch) => {
+                        if (err) {
+                            global.logger.error(err);
+                        }
+                        if (isMatch) {
+                            req.session.user = user;
+                            global.logger.info('success');
+                            res.json({
+                                errno: 0,
+                                data: '登录成功',
+                                name: name,
+                                src: user.src
+                            });
+                        } else {
+                            res.json({
+                                errno: 1,
+                                data: '密码不正确'
+                            });
+                            global.logger.info('password is not meached');
+                        }
+                    });
+                } else {
+                    res.json({
+                        errno: 1,
+                        data: '登录失败'
+                    });
+                }
+            }
+        });
+    });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

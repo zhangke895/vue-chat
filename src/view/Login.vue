@@ -19,8 +19,7 @@
 </template>
 
 <script>
-import Alert from "@components/Alert";
-import socket from "../socket";
+//import socket from "../socket";
 
 export default {
     data () {

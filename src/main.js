@@ -10,7 +10,7 @@ import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
 //import './assets/styles/main.styl';
 import {queryString} from '@utils/queryString';
-import socket from './socket';
+//import socket from './socket';
 
 Vue.use(MuseUI);
 Vue.config.productionTip = false;

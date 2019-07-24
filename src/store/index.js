@@ -50,6 +50,19 @@ const store = new Vuex.Store({
                 status: 'fail',
                 data: res.data
             };
+        },
+        async loginSubmit ({commit}, data) {
+            const res = await url.login(data);
+            if (res.data.errno === 0) {
+                return {
+                    status: 'success',
+                    data: res.data
+                }
+            }
+            return {
+                status: 'fail',
+                data: res.data
+            }
         }
     }
 });
