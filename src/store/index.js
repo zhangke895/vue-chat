@@ -24,7 +24,8 @@ const store = new Vuex.Store({
             infos: [],
             current: 1,
             total: 0
-        }
+        },
+        emojiShow: false
     },
     mutations: {
         setTab (state, data) {
@@ -74,6 +75,7 @@ const store = new Vuex.Store({
     },
     getters: {
         getUsers: state => state.roomdetail.users,
+        getEmoji: state => state.emojiShow
     }
 });
 
