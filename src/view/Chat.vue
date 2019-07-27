@@ -61,6 +61,7 @@
                     </div>
                     <mu-button class="demo-raised-button" color="primary">发送</mu-button>
                 </div>
+                <input id="inputFile" name="inputFile" type="file" multiple="mutiple" accept="image/*;capture=camera" style="display: none" />
             </div>
         </div>
     </div>
@@ -69,8 +70,17 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 import emoji from '@utils/emoji';
+import {queryString} from '@utils/queryString';
+import url from '@api/server';
+import {setItem, getItem} from '@utils/localStorage';
+import socket from '../socket';
+import loading from '@components/loading/loading';
+import debounce from 'lodash/debounce';
+
 export default {
     data () {
+        const notice = getItem('notice') || {};
+        const {noticeBar, noticeVersion} = notice;
         return {
             isloading: false,
             roomid: '',
@@ -78,10 +88,83 @@ export default {
             emoji: emoji,
             chatValue: '',
             current: 1,
+            noticeList: [],
+            noticeBar: !!noticeBar,
+            noticeVersion: noticeVersion || '20181222',
         }
     },
     components: {
 
+    },
+    async created () {
+        const roomId = queryString(window.location.href, 'roomId');
+        this.roomid = roomId;
+        if (!roomId) {
+            this.$router.push({path: '/'});
+        }
+        if (!this.userid) {
+            // 防止未登录
+            this.$router.push({path: '/login'});
+        }
+        const res = await url.getNotice();
+        this.noticeList = res.data.noticeList;
+        if (res.data.version !== res.data.version) {
+            this.noticeBar = false;
+        }
+        this.noticeVersion = res.data.version;
+    },
+    async mounted () {
+        this.container = document.querySelector('.chat-inner');
+        const that = this;
+        await this.$store.commit('setRoomDetailInfos');
+        await this.$store.commit('setTotal', 0);
+        const obj = {
+            name: this.userid,
+            src: this.src,
+            roomid: this.roomid
+        };
+        socket.emit('room', obj);
+        socket.on('room', function (obj) {
+            that.$store.commit('setUsers', obj);
+        });
+        socket.on('roomout', function (obj) {
+            that.$store.commit('setUsers', obj);
+        });
+        loading.show();
+        setTimeout(async () => {
+            const data = {
+                total: +this.getTotal,
+                current: +this.current,
+                roomid: this.roomid
+            };
+            this.isloading = true;
+            await this.$store.dispatch('getAllMessHistory', data);
+            this.isloading = false;
+            loading.hide();
+            this.$nextTick(() => {
+                this.container.scrollTop = 10000;
+            });
+        }, 500);
+        this.container.addEventListener('scroll', debounce(async (e) => {
+            if (e.target.scrollTop >= 0 && e.target.scrollTop < 50) {
+                this.$store.commit('setCurrent', +this.getCurrent + 1);
+                const data = {
+                    total: +this.getTotal,
+                    current: +this.getCurrent,
+                    roomid: this.roomid
+                };
+                this.isloading = true;
+                await this.$store.dispatch('getAllMessHistory', data);
+                this.isloading = false;
+            }
+        }, 50));
+        this.$refs.emoji.addEventListener('click', function (e) {
+            var target = e.target || e.srcElement;
+            if (!!target && target.tagName.toLowerCase() === 'span') {
+                that.chatValue = that.chatValue + target.innerHTML;
+            }
+            e.stopPropagation();
+        });
     },
     methods: {
         goback () {
@@ -95,7 +178,14 @@ export default {
         ...mapGetters([
             'getUsers',
             'getEmoji',
+            'getInfos',
+            'getCurrent',
+            'getTotal'
         ]),
+        ...mapState({
+            userid: state => state.userInfo.userid,
+            src: state => state.userInfo.src,
+        }),
     }
 }
 </script>

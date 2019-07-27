@@ -16,6 +16,34 @@ const store = new Vuex.Store({
             room1: 0,
             room2: 0
         },
+        // 存放机器人开场白
+        robotmsg: [
+            {
+                username: ROBOT_NAME,
+                src: ROBOT_URL,
+                msg: '如果微信群过期了,添加作者微信(添加时记得备注:项目交流)'
+            },
+            {
+                username: ROBOT_NAME,
+                src: ROBOT_URL,
+                img: "https://s3.qiufengh.com/webchat/webcaht-my.jpeg"
+            },
+            {
+                username: ROBOT_NAME,
+                src: ROBOT_URL,
+                msg: '期待你的加入'
+            },
+            {
+                username: ROBOT_NAME,
+                src: ROBOT_URL,
+                img: "https://s3.qiufengh.com/webchat/webchat-group.jpeg"
+            },
+            {
+                username: ROBOT_NAME,
+                src: ROBOT_URL,
+                msg: '如果还有什么想知道的可以问我'
+            }
+        ],
         // 是否启动tab
         istab: false,
         roomdetail: {
@@ -43,6 +71,22 @@ const store = new Vuex.Store({
             const {type, value} = data;
             setItem(type, value);
             state.userInfo[type] = value;
+        },
+        setRoomDetailInfos (state) {
+            state.roomdetail.infos = [];
+        },
+        setTotal (state, value) {
+            state.roomdetail.total = value;
+        },
+        addRoomDetailInfosHis (state, data) {
+            const list = state.roomdetail.infos;
+            state.roomdetail.infos = data.concat(list);
+        },
+        addRoomDetailInfos (state, data) {
+            state.roomdetail.infos.push(...data);
+        },
+        setCurrent (state, value) {
+            state.roomdetail.current = value;
         }
     },
     actions: {
@@ -71,11 +115,24 @@ const store = new Vuex.Store({
                 status: 'fail',
                 data: res.data
             }
+        },
+        async getAllMessHistory ({state, commit}, data) {
+            const res = await url.RoomHistoryAll(data);
+            if (res.data.data.errno === 0) {
+                commit('addRoomDetailInfosHis', res.data.data.data);
+                if (!state.roomdetail.total) {
+                    commit('setTotal', res.data.data.total);
+                }
+            }
         }
     },
     getters: {
         getUsers: state => state.roomdetail.users,
-        getEmoji: state => state.emojiShow
+        getEmoji: state => state.emojiShow,
+        getTotal: state => state.roomdetail.total;
+        getCurrent: state => state.roomdetail.current;
+        getInfos: state => state.roomdetail.infos,
+        getRobotMsg: state => state.robotmsg
     }
 });
 
