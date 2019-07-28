@@ -1,6 +1,15 @@
 <template>
     <div>
         <div class="container">
+            <mu-dialog width="360" :open.sync="openSimple">
+                <div class="all-chat">
+                    <div slot="title">在线人员</div>
+                    <div v-for="(obj, index) in getUsers" class="online" :key="index">
+                        <img :src="obj.src" alt="" />
+                    </div>
+                </div>
+                <mu-button slot="actions" flat color="primary" @click="closeSimpleDialog">关闭</mu-button>
+            </mu-dialog>
             <div class="title">
                 <mu-appbar title="Title" color="primary" class="appBar">
                     <mu-icon value="chevron_left" slot="left" @click="goback"></mu-icon>
@@ -10,8 +19,8 @@
             </div>
             <div class="chat-inner">
                 <div class="chat-container">
-                    <div class="chat-no-people">暂无消息，赶紧来占个沙发~</div>
-                    <div class="chat-loading">
+                    <div class="chat-no-people" v-if="getInfos.length === 0">暂无消息，赶紧来占个沙发~</div>
+                    <div class="chat-loading" v-if="getInfos.length !== 0 && isloading">
                         <div class="lds-css ng-scope">
                             <div class="lds-rolling">
                                 <div></div>
@@ -27,7 +36,7 @@
             </div>
             <div class="bottom">
                 <div class="functions">
-                    <div class="fun-li"><i class="icon iconfont icon-camera"></i></div>
+                    <div class="fun-li" @click="imgUpLoad"><i class="icon iconfont icon-camera"></i></div>
                     <div class="fun-li emoji">
                         <i class="icon iconfont icon-emoji"></i>
                         <div class="emoji-content" v-show="getEmoji">
@@ -59,9 +68,9 @@
                     <div class="input">
                         <input type="text" v-model="chatValue" />
                     </div>
-                    <mu-button class="demo-raised-button" color="primary">发送</mu-button>
+                    <mu-button class="demo-raised-button" color="primary" @click="submit">发送</mu-button>
                 </div>
-                <input id="inputFile" name="inputFile" type="file" multiple="mutiple" accept="image/*;capture=camera" style="display: none" />
+                <input id="inputFile" name="inputFile" type="file" multiple="mutiple" accept="image/*;capture=camera" style="display: none" @change="fileUp" />
             </div>
         </div>
     </div>
@@ -76,6 +85,8 @@ import {setItem, getItem} from '@utils/localStorage';
 import socket from '../socket';
 import loading from '@components/loading/loading';
 import debounce from 'lodash/debounce';
+import Alert from '@components/Alert';
+import {inHTMLData} from 'xss-filters-es6';
 
 export default {
     data () {
@@ -168,10 +179,65 @@ export default {
     },
     methods: {
         goback () {
-
+            const obj = {
+                name: this.userid,
+                roomid: this.roomid
+            };
+            socket.emit('roomout', obj);
+            this.$router.goBack();
+            this.$store.commit('setTab', true);
+            this.$store.commit('setCurrent', 0);
         },
         openSimpleDialog () {
             this.openSimple = true;
+        },
+        closeSimpleDialog () {
+            this.openSimple = false;
+        },
+        submit () {
+            // 判断发送信息是否为空
+            if (this.chatValue !== '') {
+                if (this.chatValue.length > 200) {
+                    Alert({
+                        content: '请输入100字以内'
+                    });
+                    return;
+                }
+                const msg = inHTMLData(this.chatValue); // 防止xss
+                const obj = {
+                    username: this.userid,
+                    src: this.src,
+                    img: '',
+                    msg,
+                    roomid: this.roomid,
+                    time: new Date()
+                };
+                // 传递消息
+                socket.emit('message', obj);
+                this.chatValue = '';
+            } else {
+                Alert({
+                    content: '内容不能为空'
+                });
+            }
+        },
+        imgUpLoad () {
+            const file = document.getElementById('inputFile');
+            file.click();
+        },
+        fileUp () {
+            const that = this;
+            const file1 = document.getElementById('inputFile').files[0];
+            if (file1) {
+                const formdata = new window.FormData();
+                formdata.append('file', file1);
+                formdate.append('username', this.userid);
+                formdata.append('src', this.src);
+                formdata.append('roomid', that.roomid);
+                formdata.append('time', new Date());
+                this.$store.dispatch('uploadImg', formdata);
+                const fr = new window.FileReader();
+            }
         }
     },
     computed: {
@@ -361,6 +427,18 @@ export default {
     .lds-rolling div:after {
         -webkit-transform: rotate(90deg);
         transform: rotate(90deg);
+    }
+}
+
+.all-chat {
+    .online {
+        display: inline-block;
+        margin: 5px;
+        img {
+            width: 40px;
+            height: 40px;
+            border-radius: 100%;
+        }
     }
 }
 </style>

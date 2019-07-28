@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {setItem, getItem} from '@utils/localStorage';
 import url from '@api/server.js';
+import {ROBOT_NAME, ROBOT_URL} from '@const/index';
 
 Vue.use(Vuex);
 
@@ -87,6 +88,9 @@ const store = new Vuex.Store({
         },
         setCurrent (state, value) {
             state.roomdetail.current = value;
+        },
+        setUsers (state, data) {
+            state.roomdetail.users = data;
         }
     },
     actions: {
@@ -129,8 +133,8 @@ const store = new Vuex.Store({
     getters: {
         getUsers: state => state.roomdetail.users,
         getEmoji: state => state.emojiShow,
-        getTotal: state => state.roomdetail.total;
-        getCurrent: state => state.roomdetail.current;
+        getTotal: state => state.roomdetail.total,
+        getCurrent: state => state.roomdetail.current,
         getInfos: state => state.roomdetail.infos,
         getRobotMsg: state => state.robotmsg
     }

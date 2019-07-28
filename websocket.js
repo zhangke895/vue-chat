@@ -1,7 +1,16 @@
 const Count = require('./models/count');
+const Message = require('../models/message');
+const xssFilters = require('xss-filters');
 
 let cache = {};
 cache = require('./cache/cache');
+
+const {
+    updatehCache,
+    resetCacheById,
+    getCacheById,
+    inrcCache
+} = cache;
 
 const roomList = ['room1', 'room2'];
 
@@ -51,6 +60,67 @@ function websocket (server) {
             }
             io.to(roomid).emit('room', onlineUsers);
             //global.logger.info(`${name} 加入了 ${roomid}`);
+        });
+        socket.on('roomout', async (user) => {
+            console.log('socket loginout!');
+            const {name, roomid} = user;
+            await handleLogoutRoom(roomid, name);
+        });
+        const handleLogoutRoom = async (roomid, name) => {
+            try {
+                if (users[roomid] && users[roomid].hasOwnProperty(name)) {
+                    const key = `${name}-${roomid}`;
+                    const roomInfo = {};
+                    const count = await getCacheById(key);
+                    roomInfo[roomid] = count;
+                    socket.emit('count', roomInfo);
+                    delete users[roomid][name];
+                    io.to(roomid).emit('roomout', users[roomid]);
+                    socket.leave(roomid);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        socket.on('message', async (msgObj) => {
+            console.log('socket message!');
+            // 向所有客户端广播消息
+            const {username, src, msg, img, roomid, time} = msgObj;
+            if (!msg && !img) {
+                return;
+            }
+            // 后端限制字符长度
+            const msgLimit = msg.slice(0, 200);
+            const mess = {
+                username,
+                src,
+                msg: xssFilters.inHTMLData(msgLimit), // 防止xss
+                img,
+                roomid,
+                time
+            }
+            if (mess.img === '') {
+                const message = new Message(mess);
+                message.save(function (err, res) {
+                    if (err) {
+                        return;
+                    }
+                });
+            }
+            io.to(mess.roomid).emit('message', mess);
+            // 未读消息
+            const usersList = await gethAllCache('socketId');
+            usersList.map(async item => {
+                if (!users[roomid][item]) {
+                    const key = `${item}-${roomid}`;
+                    await inrcCache(key);
+                    const socketid = await gethCacheById('socketId', item);
+                    const count = await getCacheById(key);
+                    const roomInfo = {};
+                    roomInfo[roomid] = count;
+                    socket.to(socketid).emit('count', roomInfo);
+                }
+            });
         });
     });
 }

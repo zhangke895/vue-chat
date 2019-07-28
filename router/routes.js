@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Message = require('../models/message');
 
 module.exports = (app) => {
     app.use((req, res, next) => {
@@ -6,7 +7,6 @@ module.exports = (app) => {
         app.locals.user = _user;
         next();
     });
-
     // 注册
     app.post('/user/signup', (req, res) => {
         const _user = req.body;
@@ -33,7 +33,6 @@ module.exports = (app) => {
             }
         });
     });
-
     // 登录
     app.post('/user/signin', (req, res) => {
         const _user = req.body;
@@ -79,6 +78,40 @@ module.exports = (app) => {
                 }
             }
         });
+    });
+    //获取历史记录
+    app.get('/history/message', async (req, res) => {
+        const id = req.query.roomid;
+        const current = req.query.current;
+        const total = req.query.total || 0;
+        if (!id || !current) {
+            res.json({
+                errno: 1
+            });
+        }
+        const message = {
+            errno: 0,
+            data: {},
+            total: 0,
+            current: current
+        }
+        try {
+            const messageTotal = await Message.find({roomid: id}).countDocuments().exec();
+            message.total = messageTotal;
+            let skip = parseInt((current - 1) * 20);
+            if (+total) {
+                skip += (messageTotal - total);
+            }
+            const messageData = await Message.find({roomid: id}).skip(skip).sort({'time': -1}).limit(20).exec();
+            message.data = messageData.reverse();
+            res.json({
+                data: message
+            });
+        } catch (e) {
+            res.json({
+                data: message
+            });
+        }
     });
 }
 

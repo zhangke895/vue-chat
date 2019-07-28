@@ -9,7 +9,7 @@ const Service = {
     // 请求公告
     getNotice: () => Axios.get('https://s3.qiufengh.com/config/notice-config.js'),
     // 获取当前房间所有历史记录
-    RoomHistoryAll: data => Axios.get('/history/message', { params: data}),
+    RoomHistoryAll: data => Axios.get(baseUrl + '/history/message', { params: data}),
 };
 
 export default Service;

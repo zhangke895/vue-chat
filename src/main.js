@@ -15,6 +15,53 @@ import socket from './socket';
 Vue.use(MuseUI);
 Vue.config.productionTip = false;
 
+const Notifcation = window.Notification;
+const popNotice = function (msgInfo) {
+  if (Notifcation.permission === 'granted') {
+    let content = '';
+    if (msgInfo.img !== '') {
+      content = '[图片]';
+    } else {
+      content = msgInfo.msg;
+    }
+    const notification = new Notification(`【${msgInfo.roomid}】提示`, {
+      body: content,
+      icon: msgInfo.src
+    });
+    notification.onclick = function () {
+      notification.close();
+    }
+  }
+}
+
+socket.on('message', function (obj) {
+  store.commit('addRoomDetailInfos', [obj]);
+  console.log(Notifcation.permission);
+  if (Notifcation.permission === 'granted') {
+    popNotice(obj);
+  } else if (Notification.permission !== 'denied') {
+    Notifcation.requestPermission(function (permission) {
+      popNotice(obj);
+    });
+  }
+});
+
+document.addEventListener('touchstart', (e) => {
+  if (e.target.className.indexOf('emoji') > -1 || e.target.parentNode.className.indexOf('emoji') > -1) {
+    store.commit('setEmoji', true);
+  } else {
+    store.commit('setEmoji', false);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target.className.indexOf('emoji') > -1 || e.target.parentNode.className.indexOf('emoji') > -1) {
+    store.commit('setEmoji', true);
+  } else {
+    store.commit('setEmoji', false);
+  }
+});
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
