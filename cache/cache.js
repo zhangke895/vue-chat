@@ -41,8 +41,18 @@ function inrcCache (key) {
     });
 }
 
+function updateCache (key, value) {
+    return new Promise((resv, rej) => {
+        cache_data[key] = value;
+        resv(1);
+    });
+}
+
 module.exports = {
     updatehCache,
     resetCacheById,
-    getCacheById
+    getCacheById,
+    gethAllCache,
+    updateCache,
+    inrcCache
 };

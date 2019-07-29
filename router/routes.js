@@ -1,5 +1,79 @@
 const User = require('../models/user');
 const Message = require('../models/message');
+const path = require('path');
+const superagent = require('superagent');
+const multer = require('multer');
+const fs = require('fs');
+const fileTool = require('fs-extra');
+const {cmder, rmDirFiles} = require('../utils/cmd');
+
+const mkdirsSync = function (dirname) {
+    if (fs.existsSync(dirname)) {
+        return true;
+    }
+    if (mkdirsSync(path.dirname(dirname))) {
+        fs.mkdirSync(dirname);
+        return true;
+    }
+}
+// 创建文件夹
+const createFolder = function (folder) {
+    try {
+        fs.accessSync(folder);
+    } catch (e) {
+        mkdirsSync(folder);
+    }
+}
+const uploadFolder = './static_temp';
+const urlPath = './static/files';
+console.log(uploadFolder);
+createFolder(uploadFolder);
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // 接收到文件输出的保存路径
+        cb(null, uploadFolder);
+    },
+    filename: function (req, file, cb) {
+        // 将保存文件名设置为时间戳 + 文件原始名，比如124453252-122.jpg
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const storageAvatar = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadFolder);
+    },
+    filename: function (req, file, cb) {
+        cb(null, ~~(Math.random() * 999999) + 'avatar-' + file.originalname);
+    }
+});
+const fileFilter = (req, file, cb) => {
+    const fileType = file.mimetype.toLowerCase();
+    if (fileType === 'image/png' || fileType === 'image/jpg' || fileType === 'image/jpeg' || fileType === 'image/webp') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+// 创建multer对象
+const upload = multer({
+    storage: storage,
+    limits: {
+        fields: 10,
+        files: 10,
+        fileSize: 5 * 1024 * 1024
+    },
+    fileFilter,
+});
+const uploadAvatar = multer({
+    storage: storageAvatar,
+    limits: {
+        fields: 10,
+        files: 10,
+        fileSize: 4 * 1024 * 1024
+    },
+    fileFilter,
+});
 
 module.exports = (app) => {
     app.use((req, res, next) => {
@@ -113,6 +187,51 @@ module.exports = (app) => {
             });
         }
     });
+    // 上传图片
+    app.post('/file/uploadimg', upload.single('file'), async (req, res, next) => {
+        const file = req.file;
+        if (file) {
+            const {mimetype. filename, size, path: localPath} = file;
+            const {username, roomid, time, src} = req.body;
+            const staticUrl = path.join('./static_temp', filename);
+            let img = '';
+            if (process.env.NODE_ENV === 'production') {
+
+            } else {
+                fileTool.copySync('./static_temp', './static/files');
+                rmDirFiles('./static_temp');
+                img = path.join(urlPath, filename);
+            }
+            const mess = {
+                username,
+                src,
+                img,
+                roomid,
+                time,
+            };
+            const message = new Message(mess);
+            message.save((err, mess) => {
+                if (err) {
+                    res.json({
+                        errno: 500,
+                        msg: '保存异常!'
+                    });
+                    return;
+                }
+                res.json({
+                    errno: 200,
+                    msg: '保存成功!'
+                });
+            });
+            return;
+        } else {
+            res.json({
+                errno: 500,
+                msg: '保存异常!'
+            });
+        }
+    });
+    //app.post('/file')
 }
 
 

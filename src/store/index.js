@@ -128,6 +128,14 @@ const store = new Vuex.Store({
                     commit('setTotal', res.data.data.total);
                 }
             }
+        },
+        async uploadImg ({commit}, data) {
+            const res = await url.postUploadFile(data);
+            if (res) {
+                if (res.data.errno === 0) {
+                    console.log('上传成功');
+                }
+            }
         }
     },
     getters: {

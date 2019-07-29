@@ -57,7 +57,7 @@ export default {
                         value: res.data.src
                     });
                     this.$router.push({path: '/'});
-                    //socket.emit('login', {name: data.name});
+                    socket.emit('login', {name: data.name});
                 }
             });
         },

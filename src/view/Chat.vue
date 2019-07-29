@@ -28,11 +28,9 @@
                         </div>
                     </div>
 
-
-
-
+                    <Message v-for="obj in getInfos" :key="obj._id" :is-self="obj.username === userid" :name="obj.username" :head="obj.src" :msg="obj.msg" :img="obj.img" :mytime="obj.time" :container='container'></Message>
+                    <div class="clear"></div>
                 </div>
-
             </div>
             <div class="bottom">
                 <div class="functions">
@@ -87,6 +85,8 @@ import loading from '@components/loading/loading';
 import debounce from 'lodash/debounce';
 import Alert from '@components/Alert';
 import {inHTMLData} from 'xss-filters-es6';
+import Message from '@components/Message';
+import {setTimeout} from 'timers';
 
 export default {
     data () {
@@ -105,7 +105,7 @@ export default {
         }
     },
     components: {
-
+        Message
     },
     async created () {
         const roomId = queryString(window.location.href, 'roomId');
@@ -237,6 +237,23 @@ export default {
                 formdata.append('time', new Date());
                 this.$store.dispatch('uploadImg', formdata);
                 const fr = new window.FileReader();
+                fr.onload = function () {
+                    const obj = {
+                        username: that.userid,
+                        src: that.src,
+                        img: fr.result,
+                        msg: '',
+                        roomid: that.roomid,
+                        time: new Date()
+                    };
+                    socket.emit('message', obj);
+                };
+                fr.readAsDataURL(file1);
+                this.$nextTick(() => {
+                    this.container.scrollTop = 10000;
+                });
+            } else {
+                console.log('必须要有文件');
             }
         }
     },

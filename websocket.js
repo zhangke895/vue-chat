@@ -9,6 +9,8 @@ const {
     updatehCache,
     resetCacheById,
     getCacheById,
+    gethAllCache,
+    updateCache,
     inrcCache
 } = cache;
 
@@ -17,6 +19,37 @@ const roomList = ['room1', 'room2'];
 function websocket (server) {
     const io = require('socket.io')(server);
     const users = {};
+
+    setInterval(async () => {
+        const usersList = await gethAllCache('socketId');
+        for (let i = 0; i < usersList.length; i++) {
+            const name = usersList[i];
+            for (let j = 0; j < roomList.length; j++) {
+                const roomid = roomList[j];
+                const username = `${name}-${roomid}`;
+                const roomInfo = await getCacheById(username);
+                const res = await findOne({username});
+                if (res) {
+                    Count.update({username}, {roomInfo}, (err) => {
+                        if (err) {
+                            console.log('更新失败');
+                        }
+                    });
+                } else {
+                    const count = new Count({
+                        username,
+                        roomInfo: +roomInfo
+                    });
+                    count.save(function (err, res) {
+                        if (err) {
+                            return;
+                        }
+                    });
+                }
+            }
+        }
+    }, 60000);
+
     io.on('connection', (socket) => {
         console.log('connect!');
         // 监听用户发布的聊天内容
@@ -28,6 +61,27 @@ function websocket (server) {
             if (!name) {
                 return;
             }
+            socket.name = name;
+            const roomInfo = {};
+            await updatehCache('socketId', name, socket.id);
+            for (let i = 0; i < roomList.length; i++) {
+                const roomid = roomList[i];
+                const key = `${name}-${roomid}`;
+                // 循坏所有房间
+                const res = await findOne({username: key});
+                const count = await getCacheById(key);
+                if (res) {
+                    // 数据库查数据，若缓存中没有数据，更新缓存
+                    if (+count === 0) {
+                        updateCache(key, res.roomInfo);
+                    }
+                    roomInfo[roomid] = res.roomInfo;
+                } else {
+                    roomInfo[roomid] = +count;
+                }
+            }
+            // 通知自己有多少条未读消息
+            socket.emit('count', roomInfo);
         });
         // 加入房间
         socket.on('room', async (user) => {
