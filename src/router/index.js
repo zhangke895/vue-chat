@@ -7,6 +7,7 @@ import Login from '../view/Login';
 import Register from '../view/Register';
 import Chat from '../view/Chat';
 import Robot from '../view/Robot';
+import Home from '../view/Home';
 
 Vue.use(Router);
 
@@ -49,6 +50,11 @@ const router = new Router({
         name: 'Register',
         component: Register
     },
+    {
+        path: '/home',
+        name: 'Home',
+        component: Home
+    }
   ]
 });
 
