@@ -8,6 +8,7 @@ import Register from '../view/Register';
 import Chat from '../view/Chat';
 import Robot from '../view/Robot';
 import Home from '../view/Home';
+import Avatar from '../view/Avatar';
 
 Vue.use(Router);
 
@@ -54,6 +55,11 @@ const router = new Router({
         path: '/home',
         name: 'Home',
         component: Home
+    },
+    {
+        path: '/avatar',
+        name: 'Avatar',
+        component: Avatar
     }
   ]
 });

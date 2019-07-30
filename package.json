@@ -27,6 +27,7 @@
     "socket.io-client": "^2.2.0",
     "superagent": "^5.1.0",
     "vue": "^2.5.2",
+    "vue-cropper": "^0.4.9",
     "vue-router": "^3.0.1",
     "xss-filters": "^1.2.7",
     "xss-filters-es6": "^1.0.0"
