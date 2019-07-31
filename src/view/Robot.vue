@@ -59,9 +59,18 @@ export default {
                 src: this.hosterImg
             });
             this.$store.dispatch('getRobatMess', data);
-
-        },
-
+            document.getElementById('msg').value = '';
+        }
+    },
+    computed: {
+        ...mapGetters(['getRobotMsg']),
+        ...mapState({
+            userid: state => state.userInfo.userid,
+            src: state => state.userInfo.src
+        }),
+    },
+    components: {
+        Message
     }
 }
 </script>
