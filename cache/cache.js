@@ -26,8 +26,10 @@ function getCacheById (key) {
 
 function gethAllCache (id) {
     return new Promise((resv, rej) => {
-        const res = Object.keys(cache_data[id]);
-        resv(res);
+        if (cache_data[id]) {
+            const res = Object.keys(cache_data[id]);
+            resv(res);
+        }
     });
 }
 
@@ -48,11 +50,22 @@ function updateCache (key, value) {
     });
 }
 
+function gethCacheById (id, key) {
+    return new Promise((resv, rej) => {
+        let res = 0;
+        if (cache_data[id]) {
+            res = cache_date[id][key];
+        }
+        resv(res);
+    });
+}
+
 module.exports = {
     updatehCache,
     resetCacheById,
     getCacheById,
     gethAllCache,
     updateCache,
-    inrcCache
+    inrcCache,
+    gethCacheById
 };

@@ -115,7 +115,7 @@ module.exports = (app) => {
         const password = _user.password;
         User.findOne({name: name}, (err, user) => {
             if (err) {
-                global.logger.error(err);
+                //global.logger.error(err);
             }
             if (!user) {
                 res.json({
@@ -192,7 +192,7 @@ module.exports = (app) => {
     app.post('/file/uploadimg', upload.single('file'), async (req, res, next) => {
         const file = req.file;
         if (file) {
-            const {mimetype. filename, size, path: localPath} = file;
+            const {mimetype, filename, size, path: localPath} = file;
             const {username, roomid, time, src} = req.body;
             const staticUrl = path.join('./static_temp', filename);
             let img = '';
@@ -276,6 +276,21 @@ module.exports = (app) => {
             });
         }
     });
+    // 客服消息
+    app.get('/robotapi', (req, res) => {
+        const response = res;
+        const info = req.query.info;
+        const userid = req.query.id;
+        const key = 'fde7f8d0b3c9471cbf787ea0fb0ca043';
+        superagent.post('http://www.tuling123.com/openapi/api').send({info, userid, key}).end((err, res) => {
+            if (err) {
+
+            }
+            response.json({
+                data: res.text
+            });
+        });
+    })
 }
 
 

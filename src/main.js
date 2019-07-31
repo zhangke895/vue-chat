@@ -8,7 +8,7 @@ import './assets/styles/main.css';
 // 使用museui
 import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
-//import './assets/styles/main.styl';
+import './assets/styles/main.styl';
 import {queryString} from '@utils/queryString';
 import socket from './socket';
 
@@ -47,18 +47,22 @@ socket.on('message', function (obj) {
 });
 
 document.addEventListener('touchstart', (e) => {
-  if (e.target.className.indexOf('emoji') > -1 || e.target.parentNode.className.indexOf('emoji') > -1) {
-    store.commit('setEmoji', true);
-  } else {
-    store.commit('setEmoji', false);
+  if (typeof(e.target.className) == 'string') {
+    if (e.target.className.indexOf('emoji') > -1 || e.target.parentNode.className.indexOf('emoji') > -1) {
+      store.commit('setEmoji', true);
+    } else {
+      store.commit('setEmoji', false);
+    }
   }
 });
 
 document.addEventListener('click', (e) => {
-  if (e.target.className.indexOf('emoji') > -1 || e.target.parentNode.className.indexOf('emoji') > -1) {
-    store.commit('setEmoji', true);
-  } else {
-    store.commit('setEmoji', false);
+  if (typeof(e.target.className) == 'string') {
+    if (e.target.className.indexOf('emoji') > -1 || e.target.parentNode.className.indexOf('emoji') > -1) {
+      store.commit('setEmoji', true);
+    } else {
+      store.commit('setEmoji', false);
+    }
   }
 });
 

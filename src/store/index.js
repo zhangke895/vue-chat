@@ -91,7 +91,14 @@ const store = new Vuex.Store({
         },
         setUsers (state, data) {
             state.roomdetail.users = data;
+        },
+        setRobotMsg (state, data) {
+            state.robotmsg.push(data);
+        },
+        setEmoji (state, data) {
+            state.emojiShow = data;
         }
+
     },
     actions: {
         async registerSubmit ({commit}, data) {
@@ -140,6 +147,24 @@ const store = new Vuex.Store({
         async uploadAvatar ({commit}, data) {
             const res = await url.postUploadAvatar(data);
             return res.data;
+        },
+        async getRobotMess ({commit}, data) {
+            const username = ROBOT_NAME;
+            const src = ROBOT_URL;
+            const res = await url.getRobotMessage(data);
+            if (res) {
+                const robotdata = JSON.parse(res.data.data);
+                let msg = '';
+                // 分类信息
+                if (robotdata.code === 100000) {
+                    msg = robotdata.text;
+                } else if (robotdata.code === 200000) {
+                    msg = robotdata.text + robotdata.url;
+                } else {
+                    msg = '暂不支持此类对话';
+                }
+                commit('setRobotMsg', {msg, username, src});
+            }
         }
     },
     getters: {

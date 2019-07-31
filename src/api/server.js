@@ -18,7 +18,9 @@ const Service = {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }),
     // 请求公告
-    getNotice: () => Axios.get('https://s3.qiufengh.com/config/notice-config.js')
+    getNotice: () => Axios.get('https://s3.qiufengh.com/config/notice-config.js'),
+    // 客服
+    getRobotMessage: data => Axios.get(baseUrl + '/robotapi', {params: data}),
 };
 
 export default Service;

@@ -1,5 +1,5 @@
 const Count = require('./models/count');
-const Message = require('../models/message');
+const Message = require('./models/message');
 const xssFilters = require('xss-filters');
 
 let cache = {};
@@ -11,7 +11,8 @@ const {
     getCacheById,
     gethAllCache,
     updateCache,
-    inrcCache
+    inrcCache,
+    gethCacheById
 } = cache;
 
 const roomList = ['room1', 'room2'];
@@ -30,7 +31,7 @@ function websocket (server) {
                 const roomInfo = await getCacheById(username);
                 const res = await findOne({username});
                 if (res) {
-                    Count.update({username}, {roomInfo}, (err) => {
+                    Count.updateOne({username}, {roomInfo}, (err) => {
                         if (err) {
                             console.log('更新失败');
                         }

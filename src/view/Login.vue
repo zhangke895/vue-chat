@@ -20,6 +20,7 @@
 
 <script>
 import socket from "../socket";
+import Alert from '@components/Alert';
 
 export default {
     data () {
@@ -58,7 +59,12 @@ export default {
                     });
                     this.$router.push({path: '/'});
                     socket.emit('login', {name: data.name});
+                } else {
+                    Alert({
+                        content: res.data.data,
+                    });
                 }
+                this.validateForm.username = this.validateForm.password = '';
             });
         },
         register () {

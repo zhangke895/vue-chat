@@ -231,7 +231,7 @@ export default {
             if (file1) {
                 const formdata = new window.FormData();
                 formdata.append('file', file1);
-                formdate.append('username', this.userid);
+                formdata.append('username', this.userid);
                 formdata.append('src', this.src);
                 formdata.append('roomid', that.roomid);
                 formdata.append('time', new Date());

@@ -17,7 +17,7 @@ export default function Alert (config) {
 
     config = config || {};
 
-    return new Promise(reslove => new Vue({
+    return new Promise(resolve => new Vue({
         el: div,
         data: {
             title: config.title || '提示',

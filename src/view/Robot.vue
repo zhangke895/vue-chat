@@ -58,7 +58,7 @@ export default {
                 username: this.hoster,
                 src: this.hosterImg
             });
-            this.$store.dispatch('getRobatMess', data);
+            this.$store.dispatch('getRobotMess', data);
             document.getElementById('msg').value = '';
         }
     },

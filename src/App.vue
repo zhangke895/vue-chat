@@ -5,8 +5,8 @@
     <div class="app-bottom" v-if="istab">
       <mu-paper>
         <mu-bottom-nav :value="bottomNav" @change="handleChange">
-          <mu-bottom-nav-item value="recents" title="主页" icon="restore" to="/"></mu-bottom-nav-item>
-          <mu-bottom-nav-item value="nearby" title="我的" icon="location_on" to="/home"></mu-bottom-nav-item>
+          <mu-bottom-nav-item value="recents" title="主页" icon="restore" to="/" />
+          <mu-bottom-nav-item value="nearby" title="我的" icon="location_on" to="/home" />
         </mu-bottom-nav>
       </mu-paper>
     </div>

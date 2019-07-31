@@ -31,11 +31,11 @@
 import {mapState} from 'vuex';
 import {clear, removeItem} from '@utils/localStorage';
 import Confirm from '@components/Confirm';
-import Alert from '@components/Alert';
+//import Alert from '@components/Alert';
 
 export default {
     data () {
-
+        return {};
     },
     async mounted () {
         this.$store.commit('setTab', true);
@@ -137,9 +137,10 @@ export default {
     }
 }
 .logout {
-    width: 200px;
+    width: 90%;
     margin: 0 auto;
     .demo-raised-button {
+        width: 100%;
         background: #ff4081;
         color: #fff;
     }
