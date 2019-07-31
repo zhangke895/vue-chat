@@ -231,7 +231,16 @@ module.exports = (app) => {
             });
         }
     });
-    //app.post('/file')
+    app.post('/file/avatar', uploadAvatar.single('file'), async (req, res, next) => {
+        const file = req.file;
+        console.log(req.body);
+        console.log(file);
+        if (file) {
+            const {mimetype, filename, size, path: localPath} = file;
+            const {username} = req.body;
+            const staticUrl = path.join('./')
+        }
+    });
 }
 
 

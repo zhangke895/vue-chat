@@ -136,6 +136,10 @@ const store = new Vuex.Store({
                     console.log('上传成功');
                 }
             }
+        },
+        async uploadAvatar ({commit}, data) {
+            const res = await url.postUploadAvatar(data);
+            return res.data;
         }
     },
     getters: {
