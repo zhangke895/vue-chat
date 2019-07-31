@@ -6,6 +6,7 @@ const multer = require('multer');
 const fs = require('fs');
 const fileTool = require('fs-extra');
 const {cmder, rmDirFiles} = require('../utils/cmd');
+const qnUpload = require('../deploy/qiniu');
 
 const mkdirsSync = function (dirname) {
     if (fs.existsSync(dirname)) {
@@ -238,7 +239,41 @@ module.exports = (app) => {
         if (file) {
             const {mimetype, filename, size, path: localPath} = file;
             const {username} = req.body;
-            const staticUrl = path.join('./')
+            const staticUrl = path.join('./static_temp', filename);
+            let img = '';
+            if (process.env.NODE_ENV === 'production') {
+                await qnUpload([staticUrl]);
+                // 因为是服务器运行可以直接写脚本
+                await cmder(`rm -rf ./static_temp/*`);
+                img = `//s3.qiufeng.com/webchat/` + filename;
+            } else {
+                // 兼容windows
+                fileTool.copySync('./static_temp', './static/files');
+                rmDirFiles('./static_temp');
+                img = path.join(urlPath, filename);
+            }
+            console.log(img);
+            User.update({name: username}, {src: img}, (err, data) => {
+                if (err) {
+                    res.json({
+                        errno: 500,
+                        msg: '保存异常!'
+                    });
+                    return;
+                }
+                res.json({
+                    errno: 0,
+                    data: {
+                        url: img,
+                    },
+                    msg: '保存成功!'
+                });
+            });
+        } else {
+            res.json({
+                errno: 500,
+                msg: '保存异常!'
+            });
         }
     });
 }
