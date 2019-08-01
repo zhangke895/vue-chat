@@ -126,11 +126,11 @@ module.exports = (app) => {
                 if (!!password) {
                     user.comparePassword(password, (err, isMatch) => {
                         if (err) {
-                            global.logger.error(err);
+                            //global.logger.error(err);
                         }
                         if (isMatch) {
                             req.session.user = user;
-                            global.logger.info('success');
+                            //global.logger.info('success');
                             res.json({
                                 errno: 0,
                                 data: '登录成功',
@@ -142,7 +142,7 @@ module.exports = (app) => {
                                 errno: 1,
                                 data: '密码不正确'
                             });
-                            global.logger.info('password is not meached');
+                            //global.logger.info('password is not meached');
                         }
                     });
                 } else {

@@ -145,14 +145,5 @@ export default {
     .head-place {
         right: -70px;
     }
-
-
-
-
-
-
-
-
-
 }
 </style>

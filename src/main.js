@@ -11,6 +11,8 @@ import 'muse-ui/dist/muse-ui.css';
 import './assets/styles/main.styl';
 import {queryString} from '@utils/queryString';
 import socket from './socket';
+import vuePicturePreview from './components/photo-viewer';
+Vue.use(vuePicturePreview);
 
 Vue.use(MuseUI);
 Vue.config.productionTip = false;
