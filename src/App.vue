@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <router-view></router-view>
+    <lg-preview></lg-preview>
     <!--tab选项卡-->
     <div class="app-bottom" v-if="istab">
       <mu-paper>
@@ -15,6 +16,7 @@
 
 <script>
 import {mapState} from 'vuex';
+
 export default {
   data () {
     return {

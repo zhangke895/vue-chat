@@ -11,12 +11,12 @@
         </div>
         <div class="content">
             <mu-list>
-                <mu-list-item @click="changeAvatar">
-                    <mu-icon slot="left" value="send"></mu-icon>
+                <mu-list-item>
+                    <mu-icon value="send" @click="changeAvatar"></mu-icon>
                     <mu-list-item-title>修改头像</mu-list-item-title>
                 </mu-list-item>
-                <mu-list-item @click="rmLocalData">
-                    <mu-icon slot="left" value="drafts"></mu-icon>
+                <mu-list-item>
+                    <mu-icon value="drafts"  @click="rmLocalData"></mu-icon>
                     <mu-list-item-title>清除缓存</mu-list-item-title>
                 </mu-list-item>
             </mu-list>
@@ -145,6 +145,7 @@ export default {
         color: #fff;
     }
 }
+.mu-icon { margin-right: 10px;}
 </style>
 
 

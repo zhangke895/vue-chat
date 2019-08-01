@@ -1,4 +1,4 @@
-import lgPreview from './vue-picture-preview';
+import lgPreview from './vue-picture-preview.vue';
 
 export default {
     install: function (Vue, options) {
@@ -56,6 +56,7 @@ export default {
                 updateIndex(LOGIC_EVENT_BUS.LOGIC_PREVIEW.list);
                 el.addEventListener('click', function (e) {
                     e.stopPropagation();
+
                     LOGIC_EVENT_BUS.LOGIC_PREVIEW.isTitleEnable = el.getAttribute('preview-title-enable');
                     LOGIC_EVENT_BUS.LOGIC_PREVIEW.isHorizontalNavEnable = el.getAttribute('preview-nav-enable');
                     LOGIC_EVENT_BUS.LOGIC_PREVIEW.show = true;
@@ -65,9 +66,24 @@ export default {
                 });
             },
             update: function (el, oldValue) {
-                var previewItem = LOGIC_EVENT_BUS.LOGIC_PREVIEW.list.find(function () {
+                var previewItem = LOGIC_EVENT_BUS.LOGIC_PREVIEW.list.find(function (item) {
                     return item.el === el;
                 });
+                if (!previewItem) {
+                    return;
+                }
+                previewItem.src = oldValue.value;
+                previewItem.title = el.alt;
+            },
+            unbind: function (el) {
+                if (el) {
+                    LOGIC_EVENT_BUS.LOGIC_PREVIEW.list.forEach(function (item, index) {
+                        if (el === item.el) {
+                            LOGIC_EVENT_BUS.LOGIC_PREVIEW.list.splice(index, 1);
+                        }
+                    });
+                }
+                updateIndex(LOGIC_EVENT_BUS.LOGIC_PREVIEW.list);
             }
         });
     }
